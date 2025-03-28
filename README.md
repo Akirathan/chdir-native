@@ -16,3 +16,10 @@ new File("MY_FILE.txt").getAbsolutePath() = /home/pavel/dev/chdir-native/MY_FILE
 The processe's cwd was successfully changed, but `java.io` still thinks the current
 directory is the one where the process was started.
 
+## GraalVM JDK
+```
+$ java -version
+openjdk version "21.0.2" 2024-01-16
+OpenJDK Runtime Environment GraalVM CE 21.0.2+13.1 (build 21.0.2+13-jvmci-23.1-b30)
+OpenJDK 64-Bit Server VM GraalVM CE 21.0.2+13.1 (build 21.0.2+13-jvmci-23.1-b30, mixed mode, sharing)
+```
