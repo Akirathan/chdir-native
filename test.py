@@ -31,7 +31,7 @@ def create_project(path: str, name: str) -> str:
 def maven_binary() -> str:
     if "win" in os.name.lower() or "nt" in os.name:
         print("Looking for Maven binary on Windows")
-        maven_home = "C:\\Program Files\\Apache\\apache-maven-3.9.9"
+        maven_home = "C:\\ProgramData\\chocolatey\\lib\\maven\\apache-maven-3.9.9"
         assert os.path.exists(maven_home), maven_home
         bin = os.path.join(maven_home, "bin", "mvn.cmd")
         assert os.path.exists(bin), bin
