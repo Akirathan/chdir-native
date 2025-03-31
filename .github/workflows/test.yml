@@ -43,6 +43,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Maven
+        uses: s4u/setup-maven-action@v1.18.0
+        with:
+          maven-version: "3.9.9"
+
       - name: Run test
         run: |
           python --version
