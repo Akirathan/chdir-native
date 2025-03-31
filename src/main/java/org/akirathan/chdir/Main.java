@@ -5,12 +5,12 @@ import java.io.File;
 public class Main {
 
   public static void main(String[] args) {
-    printCurWorkingDir();
-    System.out.println("=== Changing working directory to /tmp ===");
-
-    var linuxApi = new LinuxWorkingDirectory();
-    linuxApi.changeWorkingDir("/tmp");
-    System.setProperty("user.dir", "/tmp");
+    if (args.length != 1) {
+      System.err.println("Usage: provide argument with path to CWD to");
+    } else {
+      var linuxApi = new LinuxWorkingDirectory();
+      linuxApi.changeWorkingDir(args[0]);
+    }
     printCurWorkingDir();
   }
 
