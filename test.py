@@ -28,11 +28,24 @@ def create_project(path: str, name: str) -> str:
     return proj_dir
 
 
+def maven_binary() -> str:
+    if "win" in os.name:
+        print("Looking for Maven binary on Windows")
+        maven_home = "C:\\Program Files\\Apache\\apache-maven-3.9.9"
+        assert os.path.exists(maven_home), maven_home
+        bin = os.path.join(maven_home, "bin", "mvn.cmd")
+        assert os.path.exists(bin), bin
+        return bin
+    else:
+        return "mvn"
+
+
 if __name__ == '__main__':
     tmpdir = tempfile.mkdtemp(prefix="enso_test_proj")
     proj_dir = create_project(tmpdir, "Project")
     print(f"Project created at: {proj_dir}")
-    subprocess.run(["mvn", "-P", "native", "clean", "compile", "native:compile-no-fork"], check=True)
+
+    subprocess.run([maven_binary(), "-P", "native", "clean", "compile", "native:compile-no-fork"], check=True)
     target = os.path.join(os.getcwd(), "target", "chdir-native")
     assert os.path.exists(target), target
     my_vector = os.path.join(proj_dir, "src", "Data", "My_Vector.enso")
