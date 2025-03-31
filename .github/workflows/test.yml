@@ -43,6 +43,12 @@ jobs:
           refreshenv
           python --version
 
+      - name: Install Maven
+        run: |
+          choco install maven
+          refreshenv
+          mvn --version
+
       - name: Run test
         run: |
           python test.py
