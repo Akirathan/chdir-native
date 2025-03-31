@@ -1,11 +1,20 @@
 package org.akirathan.chdir;
 
 import java.io.File;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 public class Main {
+  private static final Option CWD =
+      new Option("cwd", true, "Path to change directory to");
+  private static final Options OPTIONS =
+      new Options().addOption(CWD);
 
-  public static void main(String[] args) {
-    if (args.length != 1) {
+  public static void main(String[] args) throws ParseException {
+    var line = new DefaultParser().parse(OPTIONS, args);
+    if (!line.hasOption(CWD)) {
       System.err.println("Usage: provide argument with path to CWD to");
     } else {
       var linuxApi = new LinuxWorkingDirectory();
