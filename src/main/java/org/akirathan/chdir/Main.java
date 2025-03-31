@@ -9,7 +9,19 @@ public class Main {
       System.err.println("Usage: provide argument with path to CWD to");
     } else {
       var linuxApi = new LinuxWorkingDirectory();
-      linuxApi.changeWorkingDir(args[0]);
+      var dir = line.getOptionValue(CWD);
+      while (dir != null) {
+        if (linuxApi.exists(dir, "package.yaml")) {
+          linuxApi.changeWorkingDir(dir);
+          break;
+        }
+        var lastSlash = dir.lastIndexOf('/');
+        if (lastSlash == -1) {
+          dir = null;
+        } else {
+          dir = dir.substring(0, lastSlash);
+        }
+      }
     }
     printCurWorkingDir();
   }
