@@ -45,7 +45,9 @@ if __name__ == '__main__':
     proj_dir = create_project(tmpdir, "Project")
     print(f"Project created at: {proj_dir}")
 
-    subprocess.run([maven_binary(), "-P", "native", "clean", "compile", "native:compile-no-fork"], check=True)
+    cmd = [maven_binary(), "-P", "native", "clean", "compile", "native:compile-no-fork"]
+    print(f"Running command: {cmd}")
+    subprocess.run(cmd, check=True)
     target = os.path.join(os.getcwd(), "target", "chdir-native")
     assert os.path.exists(target), target
     my_vector = os.path.join(proj_dir, "src", "Data", "My_Vector.enso")
