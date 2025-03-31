@@ -40,31 +40,80 @@ def maven_binary() -> str:
         return "mvn"
 
 
-if __name__ == '__main__':
-    print(f"os.name = {os.name}")
+def test_pwd(target: str):
+    tmpdir = tempfile.mkdtemp(prefix="test_pwd")
+    ret = subprocess.run([target, "-pwd"],
+                         capture_output=True,
+                         text=True,
+                         check=True,
+                         cwd=tmpdir)
+    print(ret.stdout)
+    print(ret.stderr)
+    last_line = ret.stdout.splitlines()[-1]
+    if last_line != tmpdir:
+        print("FAILURE in test_pwd")
+        print(f"Expected {tmpdir}, got {last_line}")
+        exit(1)
+    else:
+        print("SUCCESS in test_pwd")
+
+
+def test_cwd(target: str):
+    tmpdir = tempfile.mkdtemp(prefix="test_cwd")
+    cmd = [target, "-cwd", tmpdir]
+    print(f"Running {cmd}")
+    ret = subprocess.run(cmd,
+                          capture_output=True,
+                          text=True,
+                          check=True)
+    print(ret.stdout)
+    print(ret.stderr)
+    last_line = ret.stdout.splitlines()[-1]
+    if last_line != tmpdir:
+        print("FAILURE in test_cwd")
+        print(f"Expected {tmpdir}, got {last_line}")
+        exit(1)
+    else:
+        print("SUCCESS in test_cwd")
+
+
+def test_proj_root_chdir(target: str):
     tmpdir = tempfile.mkdtemp(prefix="enso_test_proj")
     proj_dir = create_project(tmpdir, "Project")
     print(f"Project created at: {proj_dir}")
-
-    cmd = [maven_binary(), "-P", "native", "clean", "compile", "native:compile-no-fork"]
-    print(f"Running command: {cmd}")
-    subprocess.run(cmd, check=True)
-    target = os.path.join(os.getcwd(), "target", "chdir-native")
-    assert os.path.exists(target), target
     my_vector = os.path.join(proj_dir, "src", "Data", "My_Vector.enso")
     assert os.path.exists(my_vector), my_vector
-    ret = subprocess.run([target, "-cwd", my_vector],
-                   capture_output=True,
-                   text=True,
-                   check=True)
+    cmd = [target, "-chroot", my_vector]
+    print(f"Running {cmd}")
+    ret = subprocess.run(cmd,
+                         capture_output=True,
+                         text=True,
+                         check=True)
     expected_ret = os.path.join(proj_dir, "MY_FILE.txt")
     last_returned_line = ret.stdout.splitlines()[-1]
     print(ret.stdout)
     print(ret.stderr)
     if last_returned_line != expected_ret:
-        print("FAILURE")
+        print("FAILURE in test_proj_root_chdir")
         print(f"Expected: {expected_ret}")
         print(f"Actual: {last_returned_line}")
         exit(1)
     else:
-        print("SUCCESS")
+        print("SUCCESS in test_proj_root_chdir")
+
+
+
+if __name__ == '__main__':
+    print(f"os.name = {os.name}")
+    cmd = [maven_binary(), "-P", "native", "clean", "compile", "native:compile-no-fork"]
+    print(f"Running command: {cmd}")
+    subprocess.run(cmd, check=True)
+    target = os.path.join(os.getcwd(), "target", "chdir-native")
+    assert os.path.exists(target), target
+
+    print("=== test_pwd ===")
+    test_pwd(target)
+    print("=== test_cwd ===")
+    test_cwd(target)
+    print("=== test_proj_root_chdir ===")
+    test_proj_root_chdir(target)

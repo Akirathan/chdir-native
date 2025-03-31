@@ -45,6 +45,7 @@
             </executions>
             <configuration>
               <mainClass>${native.maven.plugin.mainClass}</mainClass>
+              <buildArgs>--initialize-at-build-time=org.akirathan.chdir.Platform</buildArgs>
             </configuration>
           </plugin>
         </plugins>

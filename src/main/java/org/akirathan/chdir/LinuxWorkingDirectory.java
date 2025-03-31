@@ -11,9 +11,10 @@ import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
 
 @CContext(LinuxWorkingDirectory.Directives.class)
-public final class LinuxWorkingDirectory {
+public final class LinuxWorkingDirectory implements WorkingDirectory {
   private static final String PWD = "pwd";
 
+  @Override
   public boolean exists(String dir, String file) {
     String full;
     if (dir.endsWith("/")) {
@@ -27,6 +28,7 @@ public final class LinuxWorkingDirectory {
     }
   }
 
+  @Override
   public boolean changeWorkingDir(String path) {
     try (var cPath = CTypeConversion.toCString(path + "\0")) {
       int res = chdir(cPath.get());
@@ -47,6 +49,7 @@ public final class LinuxWorkingDirectory {
     }
   }
 
+  @Override
   public String currentWorkingDir() {
     String cwd;
     try {
@@ -107,7 +110,7 @@ public final class LinuxWorkingDirectory {
 
     @Override
     public boolean isInConfiguration() {
-      return true;
+      return Platform.getOperatingSystem().isLinux();
     }
 
     @Override
