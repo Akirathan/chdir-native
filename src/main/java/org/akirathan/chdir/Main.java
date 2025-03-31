@@ -46,5 +46,6 @@ public class Main {
 
     var f = new File("MY_FILE.txt");
     System.out.println("new File(\"MY_FILE.txt\").getAbsolutePath() = " + f.getAbsolutePath());
+    System.out.println(f.getAbsolutePath());
   }
 }

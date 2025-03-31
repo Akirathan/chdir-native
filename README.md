@@ -1,20 +1,22 @@
-How does `java.io` react if we change directory via `chdir` syscall in NativeImage?
-
-Build native image with `mvn -P native clean compile native:compile-no-fork` and run `./target/chdir-native`:
+Emulate the behavior of [Enso cmdline launcher](https://github.com/enso-org/enso/blob/2f71da28a4d2a67dac4998484d7a9449c58c5210/engine/runner/src/main/java/org/enso/runner/Utils.java#L64).
+This repository is minimal testing for https://github.com/enso-org/enso/pull/12618
+Build native image with
 ```
-user.dir system prop = /home/pavel/dev/chdir-native
-pwd = /home/pavel/dev/chdir-native
-getcwd = /home/pavel/dev/chdir-native
-new File("MY_FILE.txt").getAbsolutePath() = /home/pavel/dev/chdir-native/MY_FILE.txt
-=== Changing working directory to /tmp ===
-user.dir system prop = /tmp
-pwd = /tmp
-getcwd = /tmp
-new File("MY_FILE.txt").getAbsolutePath() = /home/pavel/dev/chdir-native/MY_FILE.txt
+mvn -P native clean compile native:compile-no-fork
+```
+Run native image with
+```
+./target/chdir-native -pwd ~/dev/enso/test/Base_Tests/src/Data/Vector_Spec.enso
+```
+It should detect the project root and print it as the last line in stdout:
+```
+user.dir system prop = /home/pavel/dev/enso/test/Base_Tests
+pwd = /home/pavel/dev/enso/test/Base_Tests
+getcwd = /home/pavel/dev/enso/test/Base_Tests
+new File("MY_FILE.txt").getAbsolutePath() = /home/pavel/dev/enso/test/Base_Tests/MY_FILE.txt
+/home/pavel/dev/enso/test/Base_Tests/MY_FILE.txt
 ```
 
-The processe's cwd was successfully changed, but `java.io` still thinks the current
-directory is the one where the process was started.
 
 ## GraalVM JDK
 ```
