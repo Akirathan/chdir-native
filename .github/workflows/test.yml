@@ -18,12 +18,13 @@ jobs:
           distribution: "graalvm-community"
 
       - name: Install Python
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
       - name: Run test
         run: |
+          python --version
           python test.py
 
   windows:
@@ -38,17 +39,11 @@ jobs:
           distribution: "graalvm-community"
 
       - name: Install Python
-        run: |
-          choco install python3
-          refreshenv
-          python --version
-
-      - name: Install Maven
-        run: |
-          choco install maven
-          refreshenv
-          mvn --version
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
       - name: Run test
         run: |
+          python --version
           python test.py
