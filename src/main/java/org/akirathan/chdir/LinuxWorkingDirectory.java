@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.graalvm.nativeimage.ImageInfo;
 import org.graalvm.nativeimage.c.CContext;
+import org.graalvm.nativeimage.c.constant.CConstant;
 import org.graalvm.nativeimage.c.function.CFunction;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
@@ -12,6 +13,19 @@ import org.graalvm.nativeimage.c.type.CTypeConversion;
 @CContext(LinuxWorkingDirectory.Directives.class)
 public final class LinuxWorkingDirectory {
   private static final String PWD = "pwd";
+
+  public boolean exists(String dir, String file) {
+    String full;
+    if (dir.endsWith("/")) {
+      full = dir + file;
+    } else {
+      full = dir + "/" + file;
+    }
+    try(var cPath = CTypeConversion.toCString(full)) {
+      var res = access(cPath.get(), R_OK());
+      return res == 0;
+    }
+  }
 
   public boolean changeWorkingDir(String path) {
     try (var cPath = CTypeConversion.toCString(path + "\0")) {
@@ -47,6 +61,12 @@ public final class LinuxWorkingDirectory {
     }
     return cwd;
   }
+
+  @CConstant
+  static native int R_OK();
+
+  @CFunction
+  static native int access(CCharPointer path, int mode);
 
   @CFunction
   static native int chdir(CCharPointer path);
