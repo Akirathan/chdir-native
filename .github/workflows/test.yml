@@ -17,10 +17,31 @@ jobs:
           java-version: "21"
           distribution: "graalvm-community"
 
-      - name: Install Python and other deps
+      - name: Install Python
         run: |
           sudo apt-get update
           sudo apt-get install -y python3
+
+      - name: Run test
+        run: |
+          python test.py
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download and install Graal
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: "21"
+          distribution: "graalvm-community"
+
+      - name: Install Python
+        run: |
+          choco install python3
+          refreshenv
+          python --version
 
       - name: Run test
         run: |
