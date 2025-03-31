@@ -29,7 +29,7 @@ def create_project(path: str, name: str) -> str:
 
 
 def maven_binary() -> str:
-    if "win" in os.name:
+    if "win" in os.name.lower():
         print("Looking for Maven binary on Windows")
         maven_home = "C:\\Program Files\\Apache\\apache-maven-3.9.9"
         assert os.path.exists(maven_home), maven_home
@@ -41,6 +41,7 @@ def maven_binary() -> str:
 
 
 if __name__ == '__main__':
+    print(f"os.name = {os.name}")
     tmpdir = tempfile.mkdtemp(prefix="enso_test_proj")
     proj_dir = create_project(tmpdir, "Project")
     print(f"Project created at: {proj_dir}")
