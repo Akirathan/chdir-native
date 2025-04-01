@@ -64,7 +64,7 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
 
     @Override
     public List<String> getHeaderFiles() {
-      return List.of("<windows.h>");
+      return List.of("<windows.h>", "<winbase.h>");
     }
 
     @Override
