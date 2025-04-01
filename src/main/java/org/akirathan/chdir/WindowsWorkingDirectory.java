@@ -69,7 +69,7 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
 
     @Override
     public List<String> getLibraries() {
-      return List.of("shell32");
+      return List.of("shell32", "Kernel32");
     }
   }
 }
