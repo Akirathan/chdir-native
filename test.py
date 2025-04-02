@@ -40,6 +40,14 @@ def maven_binary() -> str:
         return "mvn"
 
 
+def target() -> str:
+    if "win" in os.name.lower() or "nt" in os.name:
+        fname = "chdir-native.exe"
+    else:
+        fname = "chdir-native"
+    return  os.path.join(os.getcwd(), "target", fname)
+
+
 def test_pwd(target: str):
     tmpdir = tempfile.mkdtemp(prefix="test_pwd")
     ret = subprocess.run([target, "-pwd"],
@@ -108,7 +116,7 @@ if __name__ == '__main__':
     cmd = [maven_binary(), "-P", "native", "clean", "compile", "native:compile-no-fork"]
     print(f"Running command: {cmd}")
     subprocess.run(cmd, check=True)
-    target = os.path.join(os.getcwd(), "target", "chdir-native")
+    target = target()
     assert os.path.exists(target), target
 
     print("=== test_pwd ===")
