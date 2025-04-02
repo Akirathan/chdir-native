@@ -2,12 +2,9 @@ package org.akirathan.chdir;
 
 import java.util.List;
 import org.graalvm.nativeimage.c.CContext;
-import org.graalvm.nativeimage.c.CContext.Directives;
 import org.graalvm.nativeimage.c.function.CFunction;
 import org.graalvm.nativeimage.c.type.CCharPointer;
-import org.graalvm.nativeimage.c.type.CShortPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
-import org.graalvm.nativeimage.c.type.VoidPointer;
 
 @CContext(WindowsWorkingDirectory.Directives.class)
 public final class WindowsWorkingDirectory implements WorkingDirectory {
@@ -18,7 +15,7 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
     String path;
     try (var ptrHolder = CTypeConversion.toCBytes(buf)) {
       var ptr = ptrHolder.get();
-      var ret = GetCurrentDirectory(4096, ptr);
+      var ret = GetCurrentDirectoryA(4096, ptr);
       if (ret == 0) {
         System.err.println("GetCurrentDirectory failed");
         return null;
@@ -33,7 +30,7 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
   public boolean changeWorkingDir(String path) {
     try (var cPath = CTypeConversion.toCString(path + "\0")) {
       var ptr = cPath.get();
-      var res = SetCurrentDirectory((VoidPointer) ptr);
+      var res = SetCurrentDirectoryA(ptr);
       if (res == 0) {
         System.err.println("SetCurrentDirectory failed");
         return false;
@@ -49,14 +46,26 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
 
   @Override
   public boolean exists(String dir, String file) {
-    throw new UnsupportedOperationException("unimplemented");
+    var path = dir + "\\" + file;
+    try (var cPath = CTypeConversion.toCString(path)) {
+      var ptr = cPath.get();
+      var res = PathFileExistsA(ptr);
+      return res != 0;
+    } catch (Throwable t) {
+      System.err.println("Cannot check if " + path + " exists on Windows");
+      throw t;
+    }
   }
 
   @CFunction
-  static native int GetCurrentDirectory(int nBufferLength, CCharPointer lpBuffer);
+  static native int GetCurrentDirectoryA(int nBufferLength, CCharPointer lpBuffer);
 
   @CFunction
-  static native int SetCurrentDirectory(VoidPointer lpPathName);
+  static native int SetCurrentDirectoryA(CCharPointer lpPathName);
+
+  @CFunction
+  static native int PathFileExistsA(CCharPointer pszPath);
+
 
   static final class Directives implements CContext.Directives {
     @Override
@@ -66,12 +75,12 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
 
     @Override
     public List<String> getHeaderFiles() {
-      return List.of("<windows.h>", "<winbase.h>");
+      return List.of("<windows.h>", "<winbase.h>", "<shlwapi.h>");
     }
 
     @Override
     public List<String> getLibraries() {
-      return List.of("Kernel32", "kernel32");
+      return List.of("Kernel32", "Shlwapi");
     }
   }
 }
