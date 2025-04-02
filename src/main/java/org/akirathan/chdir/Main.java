@@ -53,7 +53,7 @@ public class Main {
           nativeApi.changeWorkingDir(projectRoot);
           break;
         }
-        var lastSlash = projectRoot.lastIndexOf('/');
+        var lastSlash = projectRoot.lastIndexOf(File.separatorChar);
         if (lastSlash == -1) {
           projectRoot = null;
         } else {
