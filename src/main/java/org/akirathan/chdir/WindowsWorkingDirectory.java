@@ -7,6 +7,7 @@ import org.graalvm.nativeimage.c.function.CFunction;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CShortPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
+import org.graalvm.nativeimage.c.type.VoidPointer;
 
 @CContext(WindowsWorkingDirectory.Directives.class)
 public final class WindowsWorkingDirectory implements WorkingDirectory {
@@ -32,7 +33,7 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
   public boolean changeWorkingDir(String path) {
     try (var cPath = CTypeConversion.toCString(path + "\0")) {
       var ptr = cPath.get();
-      var res = SetCurrentDirectory((CShortPointer) ptr);
+      var res = SetCurrentDirectory((VoidPointer) ptr);
       if (res == 0) {
         System.err.println("SetCurrentDirectory failed");
         return false;
@@ -55,7 +56,7 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
   static native int GetCurrentDirectory(int nBufferLength, CCharPointer lpBuffer);
 
   @CFunction
-  static native int SetCurrentDirectory(CShortPointer lpPathName);
+  static native int SetCurrentDirectory(VoidPointer lpPathName);
 
   static final class Directives implements CContext.Directives {
     @Override
