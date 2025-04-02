@@ -28,6 +28,7 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
 
   @Override
   public boolean changeWorkingDir(String path) {
+    System.out.println("[WindowsWorkingDir] Changing working dir to " + path);
     try (var cPath = CTypeConversion.toCString(path + "\0")) {
       var ptr = cPath.get();
       var res = SetCurrentDirectoryA(ptr);
@@ -46,10 +47,12 @@ public final class WindowsWorkingDirectory implements WorkingDirectory {
 
   @Override
   public boolean exists(String dir, String file) {
+    System.out.println("[WindowsWorkingDir] exists: dir=" + dir + ", file=" + file);
     var path = dir + "\\" + file;
     try (var cPath = CTypeConversion.toCString(path)) {
       var ptr = cPath.get();
       var res = PathFileExistsA(ptr);
+      System.out.println("[WindowsWorkingDir] exists: res = " + res);
       return res != 0;
     } catch (Throwable t) {
       System.err.println("Cannot check if " + path + " exists on Windows");
